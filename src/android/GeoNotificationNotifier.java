@@ -31,9 +31,11 @@ public class GeoNotificationNotifier {
                 .setVibrate(notification.getVibrate())
                 .setSmallIcon(notification.getSmallIcon())
                 .setLargeIcon(notification.getLargeIcon())
-                .setAutoCancel(true)
                 .setContentTitle(notification.getTitle())
-                .setContentText(notification.getText());
+                .setColor(notification.getColor())
+                .setContentText(notification.getText())
+                .setStyle(new NotificationCompat.BigTextStyle().bigText(notification.getText()))
+                ;
 
         if (notification.openAppOnClick) {
             String packageName = context.getPackageName();

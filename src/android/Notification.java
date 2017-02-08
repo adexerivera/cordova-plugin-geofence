@@ -6,6 +6,8 @@ import android.net.Uri;
 
 import com.google.gson.annotations.Expose;
 
+import android.graphics.Color;
+
 public class Notification {
     private Context context;
     private AssetUtil assets;
@@ -59,6 +61,10 @@ public class Notification {
         }
 
         return bmp;
+    }
+
+    public int getColor() {
+        return Color.parseColor(this.iconBgColor);
     }
 
     public String getDataJson() {
