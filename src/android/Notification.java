@@ -18,6 +18,12 @@ public class Notification {
     @Expose public String smallIcon = "";
     @Expose public Object data;
     @Expose public boolean openAppOnClick;
+    @Expose public boolean byDate;
+    @Expose public int preTimeRange;
+    @Expose public String since = "";
+    @Expose public String until = "";
+    @Expose public String time = "";
+    @Expose public String iconBgColor = "#FFCCCC";
 
     public void setContext(Context context) {
         this.context = context;

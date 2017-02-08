@@ -12,6 +12,12 @@ import com.google.android.gms.location.GeofencingEvent;
 import java.util.ArrayList;
 import java.util.List;
 
+import java.util.Date;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.sql.Timestamp;
+import java.util.Calendar;
+
 public class ReceiveTransitionsIntentService extends IntentService {
     protected static final String GeofenceTransitionIntent = "com.cowbell.cordova.geofence.TRANSITION";
     protected BeepHelper beepHelper;
@@ -26,6 +32,17 @@ public class ReceiveTransitionsIntentService extends IntentService {
         beepHelper = new BeepHelper();
         store = new GeoNotificationStore(this);
         Logger.setLogger(new Logger(GeofencePlugin.TAG, this, false));
+    }
+
+    /**
+     * Add days to date object
+     */
+    public static Date addDays(Date date, int days)
+    {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.add(Calendar.DATE, days); // Minus number would decrement the days
+        return cal.getTime();
     }
 
     /**
@@ -70,7 +87,34 @@ public class ReceiveTransitionsIntentService extends IntentService {
 
                     if (geoNotification != null) {
                         if (geoNotification.notification != null) {
-                            notifier.notify(geoNotification.notification);
+                            // Check if now its between event time
+                            if(geoNotification.notification.byDate) {
+                                if(geoNotification.notification.since != "" && geoNotification.notification.until != "" && geoNotification.notification.time != "") {
+                                    DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+                                    Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+                                    Date today = null;
+                                    Date geofenceSinceDate = null;
+                                    Date geofenceUntilDate = null;
+                                    Date futureDate = null;
+                                    try {
+                                        today = sdf.parse(sdf.format(timestamp));
+                                        futureDate = this.addDays(today, geoNotification.notification.preTimeRange);
+                                        if(geoNotification.notification.time != "")
+                                            geofenceSinceDate = sdf.parse(geoNotification.notification.since + " " + geoNotification.notification.time);
+                                        else
+                                            geofenceSinceDate = sdf.parse(geoNotification.notification.since + " 00:00");
+                                        geofenceUntilDate = sdf.parse(geoNotification.notification.until + " 23:59");
+                                    }
+                                    catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                    if(today.before(geofenceSinceDate) && geofenceSinceDate.before(futureDate) && geofenceUntilDate.after(today)) {
+                                        notifier.notify(geoNotification.notification);
+                                    }
+                                }
+                            } else {
+                                notifier.notify(geoNotification.notification);
+                            }
                         }
                         geoNotification.transitionType = transitionType;
                         geoNotifications.add(geoNotification);
