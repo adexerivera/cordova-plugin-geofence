@@ -403,20 +403,61 @@ class GeoNotificationManager : NSObject, CLLocationManagerDelegate {
 
     func notifyAbout(geo: JSON) {
         log("Creating notification")
-        let notification = UILocalNotification()
-        notification.timeZone = NSTimeZone.defaultTimeZone()
-        let dateTime = NSDate()
-        notification.fireDate = dateTime
-        notification.soundName = UILocalNotificationDefaultSoundName
-        notification.alertBody = geo["notification"]["text"].stringValue
-        if let json = geo["notification"]["data"] as JSON? {
-            notification.userInfo = ["geofence.notification.data": json.rawString(NSUTF8StringEncoding, options: [])!]
-        }
-        UIApplication.sharedApplication().scheduleLocalNotification(notification)
+        var createNotification = false
+        var geofenceSinceDateStr = ""
+        var geofenceUntilDateStr = ""
+        var geofenceSinceDate = NSDate()
+        var geofenceUntilDate = NSDate()
+        let today = NSDate()
+        let oneDay: NSTimeInterval = 24 * 60.0 * 60
+        let futureDate = today.dateByAddingTimeInterval(oneDay)
+        let dateFormatter = NSDateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm"
+        // Check if now its between event time
+        if(geo["notification"]["byDate"]) {
+            if(geo["notification"]["since"].stringValue != "" && geo["notification"]["until"].stringValue != "") {
+                if(geo["notification"]["time"].stringValue != "") {
+                    geofenceSinceDateStr = geo["notification"]["since"].stringValue + " " + geo["notification"]["time"].stringValue
+                } else {
+                    geofenceSinceDateStr = geo["notification"]["since"].stringValue + " 00:00"
+                }
+                geofenceUntilDateStr = geo["notification"]["until"].stringValue + " 23:59"
 
-        if let vibrate = geo["notification"]["vibrate"].array {
-            if (!vibrate.isEmpty && vibrate[0].intValue > 0) {
-                AudioServicesPlayAlertSound(SystemSoundID(kSystemSoundID_Vibrate))
+                geofenceSinceDate = dateFormatter.dateFromString(geofenceSinceDateStr)!
+                geofenceUntilDate = dateFormatter.dateFromString(geofenceUntilDateStr)!
+
+                if(today.compare(geofenceSinceDate) == NSComparisonResult.OrderedAscending) {
+                    if(geofenceSinceDate.compare(futureDate) == NSComparisonResult.OrderedAscending
+                    && geofenceUntilDate.compare(today) == NSComparisonResult.OrderedDescending) {
+                        createNotification = true
+                    }
+                } else {
+                    // Toay is later than since, then must compare if today is earlier than until
+                    if(geofenceUntilDate.compare(today) == NSComparisonResult.OrderedDescending) {
+                        createNotification = true;
+                    }
+                }
+            }
+        } else {
+            createNotification = true
+        }
+
+        if(createNotification) {
+            let notification = UILocalNotification()
+            notification.timeZone = NSTimeZone.defaultTimeZone()
+            let dateTime = NSDate()
+            notification.fireDate = dateTime
+            notification.soundName = UILocalNotificationDefaultSoundName
+            notification.alertBody = geo["notification"]["text"].stringValue
+            if let json = geo["notification"]["data"] as JSON? {
+                notification.userInfo = ["geofence.notification.data": json.rawString(NSUTF8StringEncoding, options: [])!]
+            }
+            UIApplication.sharedApplication().scheduleLocalNotification(notification)
+
+            if let vibrate = geo["notification"]["vibrate"].array {
+                if (!vibrate.isEmpty && vibrate[0].intValue > 0) {
+                    AudioServicesPlayAlertSound(SystemSoundID(kSystemSoundID_Vibrate))
+                }
             }
         }
     }
