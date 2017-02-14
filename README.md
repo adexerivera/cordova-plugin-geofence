@@ -1,35 +1,21 @@
 # Cordova Geofence Plugin
 
-[![Code Climate](https://codeclimate.com/github/cowbell/cordova-plugin-geofence/badges/gpa.svg)](https://codeclimate.com/github/cowbell/cordova-plugin-geofence)
+[![Code Climate](https://codeclimate.com/github/adexerivera/cordova-plugin-geofence/badges/gpa.svg)](https://codeclimate.com/github/adexerivera/cordova-plugin-geofence)
 [![version](https://badge.fury.io/js/cordova-plugin-geofence.png)](https://badge.fury.io/js/cordova-plugin-geofence)
 
-iOS Build [![Build Status](https://travis-ci.org/cowbell/cordova-plugin-geofence.svg?branch=master)](https://travis-ci.org/cowbell/cordova-plugin-geofence)
+iOS Build [![Build Status](https://travis-ci.org/adexerivera/cordova-plugin-geofence.svg?branch=master)](https://travis-ci.org/adexerivera/cordova-plugin-geofence)
 
-Android Build [![Build Status](https://circleci.com/gh/cowbell/cordova-plugin-geofence.svg?style=shield&circle-token=:circle-token)](https://circleci.com/gh/cowbell/cordova-plugin-geofence)
+Android Build [![Build Status](https://circleci.com/gh/adexerivera/cordova-plugin-geofence.svg?style=shield&circle-token=:circle-token)](https://circleci.com/gh/adexerivera/cordova-plugin-geofence)
 
 Plugin to monitor circular geofences using mobile devices. The purpose is to notify user if crossing the boundary of the monitored geofence.
 
 *Geofences persist after device reboot. You do not have to open your app first to monitor added geofences*
 
-##Example applications
-
-Check out our example applications:
-
-* https://github.com/cowbell/ionic-geofence built with [Ionic](http://ionic.io/) framework
-* https://github.com/tsubik/ionic2-geofence built with [Ionic 2](http://ionic.io/2) framework
-* https://github.com/cowbell/ember-geofence built with [Ember.js](http://emberjs.com/), [Cordova](https://cordova.apache.org/), [Material Design](https://www.google.com/design/spec/material-design/introduction.html)
-
 ## Installation
 
 From master
 ```
-cordova plugin add https://github.com/cowbell/cordova-plugin-geofence
-```
-
-Latest stable version
-
-```
-cordova plugin add cordova-plugin-geofence
+cordova plugin add https://github.com/adexerivera/cordova-plugin-geofence
 ```
 
 ## Removing the Plugin from project
@@ -124,20 +110,26 @@ If required permissions are not granted then initialization fails with error mes
 
 ```javascript
 window.geofence.addOrUpdate({
-    id:             String, //A unique identifier of geofence
-    latitude:       Number, //Geo latitude of geofence
-    longitude:      Number, //Geo longitude of geofence
-    radius:         Number, //Radius of geofence in meters
-    transitionType: Number, //Type of transition 1 - Enter, 2 - Exit, 3 - Both
-    notification: {         //Notification object
-        id:             Number, //optional should be integer, id of notification
-        title:          String, //Title of notification
-        text:           String, //Text of notification
-        smallIcon:      String, //Small icon showed in notification area, only res URI
-        icon:           String, //icon showed in notification drawer
-        openAppOnClick: Boolean,//is main app activity should be opened after clicking on notification
-        vibration:      [Integer], //Optional vibration pattern - see description
-        data:           Object  //Custom object associated with notification
+    id:             String, // A unique identifier of geofence
+    latitude:       Number, // Geo latitude of geofence
+    longitude:      Number, // Geo longitude of geofence
+    radius:         Number, // Radius of geofence in meters
+    transitionType: Number, // Type of transition 1 - Enter, 2 - Exit, 3 - Both
+    notification: {         // Notification object
+        id:             Number,    // Optional should be integer, id of notification
+        title:          String,    // Title of notification
+        text:           String,    // Text of notification
+        smallIcon:      String,    // Small icon showed in notification area, only res URI
+        icon:           String,    // Icon showed in notification drawer
+        openAppOnClick: Boolean,   // Is main app activity should be opened after clicking on notification
+        byDate:         Boolean,   // Launch notification in range date and time
+        preTimeRange:   Integer,   // Mandatory if byDate its true. Range date for launch notification
+        since:          String,    // Mandatory if byDate its true. Since date for launch notification
+        until:          String,    // Mandatory if byDate its true. Until date for launch notification
+        time:           String,    // Optional, since time for launch notification
+        iconBgColor:    String,    // Optional, background notification icon color
+        vibration:      [Integer], // Optional vibration pattern - see description
+        data:           Object     // Custom object associated with notification
     }
 }).then(function () {
     console.log('Geofence successfully added');
@@ -332,27 +324,6 @@ window.geofence.addOrUpdate({
     console.log('Adding geofence failed', reason);
 })
 ```
-
-# Development
-
-##Installation
-
-- git clone https://github.com/cowbell/cordova-plugin-geofence
-- change into the new directory
-- `npm install`
-
-##Running tests
-
-- Start emulator
-- `cordova-paramedic --platform android --plugin .`
-
-###Testing on iOS
-
-Before you run `cordova-paramedic` install `npm install -g ios-sim`
-
-###Troubleshooting
-
-Add `--verbose` at the end of `cordova-paramedic` command.
 
 ##License
 
