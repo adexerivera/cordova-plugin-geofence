@@ -159,7 +159,13 @@ func log(messages: [String]) {
                 if let notificationData = uiNotification.userInfo?["geofence.notification.data"] as? String {
                     data = notificationData
                 }
-                let js = "setTimeout('geofence.onNotificationClicked(" + data + ")',0)"
+                // Check if data its string for quoted information
+                var js = "";
+                if data is String {
+                    js = "setTimeout('geofence.onNotificationClicked(" + "\"" + data + "\"" + ")',0)"
+                } else {
+                    js = "setTimeout('geofence.onNotificationClicked(" + data + ")',0)"
+                }
 
                 evaluateJs(js)
             }
