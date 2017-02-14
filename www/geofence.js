@@ -175,6 +175,38 @@ function coerceProperties(geofence) {
             geofence.notification.openAppOnClick = coerceBoolean("Geofence notification.openAppOnClick", geofence.notification.openAppOnClick);
         }
 
+        if (geofence.notification.byDate) {
+            geofence.notification.byDate = coerceBoolean("Geofence notification.byDate", geofence.notification.byDate);
+        }
+
+        if (geofence.notification.byDate) {
+            if (geofence.notification.preTimeRange) {
+                geofence.notification.preTimeRange = coerceNumber("Geofence preTimeRange", geofence.notification.preTimeRange);
+            } else {
+                throw new Error("Geofence preTimeRange is not provided");
+            }
+
+            if (geofence.notification.since) {
+                geofence.notification.since = geofence.notification.since.toString();
+            } else {
+                throw new Error("Geofence since is not provided");
+            }
+
+            if (geofence.notification.until) {
+                geofence.notification.until = geofence.notification.until.toString();
+            } else {
+                throw new Error("Geofence until is not provided");
+            }
+
+            if (geofence.notification.time) {
+                geofence.notification.time = geofence.notification.time.toString();
+            }
+
+            if (geofence.notification.iconBgColor) {
+                geofence.notification.iconBgColor = geofence.notification.iconBgColor.toString();
+            }
+        }
+
         if (geofence.notification.vibration) {
             if (Array.isArray(geofence.notification.vibration)) {
                 for (var i=0; i<geofence.notification.vibration.length; i++) {
